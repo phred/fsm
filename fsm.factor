@@ -1,13 +1,13 @@
 ! Copyright (C) 2011 Fred Alger.
 ! See http://factorcode.org/license.txt for BSD license.
 USING: accessors constructors kernel sequences sets
-words.symbol ;
+words.symbol models ;
 IN: fsm
 
 
 SYMBOL: undefined-state
 
-TUPLE: fsm
+TUPLE: fsm < model
   { states set }
   { transitions set }
   { current-state symbol initial: undefined-state } ;
@@ -46,6 +46,10 @@ M: fsm transition ( obj state -- )
     2dup
     in-next-states?
     [ bad-transition ] unless
-    >>current-state drop ;
+    [ >>current-state ] keep name>> swap set-model ;
 
-CONSTRUCTOR: fsm ( states transitions current-state -- fsm ) ;
+: <fsm> ( states transitions current-state -- fsm )
+    dup name>> fsm new-model
+    [ current-state<< ] keep
+    [ transitions<< ] keep
+    [ states<< ] keep ;
